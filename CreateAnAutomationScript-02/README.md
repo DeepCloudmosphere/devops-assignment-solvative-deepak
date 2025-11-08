@@ -40,6 +40,8 @@ Logs the report to:
 chmod +x monitor_cpu_mem.sh
 sudo ./monitor_cpu_mem.sh
 ```
+<img width="1302" height="245" alt="Screenshot 2025-11-08 at 2 58 08 PM" src="https://github.com/user-attachments/assets/a591d6b0-f57e-48dc-a609-cb33c95d777e" />
+
 
 ## 📜 Script 2:  mysql_db_backup.sh
 
@@ -73,3 +75,4 @@ BACKUP_DIR="/var/backups/mysql"   # Backup directory
 chmod +x mysql_db_backup.sh
 sudo ./mysql_db_backup.sh
 ```
+<img width="1291" height="333" alt="Screenshot 2025-11-08 at 2 57 35 PM" src="https://github.com/user-attachments/assets/ea0fd8f0-a354-4d9f-97e4-51f6408f3a30" />
