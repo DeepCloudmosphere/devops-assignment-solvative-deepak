@@ -1,0 +1,97 @@
+---
+- name: Install Apache2, MySQL, and Docker
+  hosts: servers
+  become: true
+  tasks:
+    # upadte system packages
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    # installl apache2 package
+    - name: Install apache2
+      apt:
+        name: apache2
+        state: present
+    # start apache2 service
+    - name: Ensure apache2 is started and enabled
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+    # install mysql server
+    - name: Install MySQL Server
+      apt:
+        name: mysql-server
+        state: present
+    # start mysql server
+    - name: Ensure MySQL is started and enabled
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+    #  install python3-pip for docker sdk
+    - name: Ensure python3-pip is installed (for docker SDK)
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+    # install docker sdk  using pip
+    - name: Install Docker SDK for Python on the host so Ansible docker modules work
+      pip:
+        name: docker
+        state: present
+        executable: pip3
+    # install docker depedencies
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+    # add gpg key for docker
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    # add official repo of docker in system
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+    # install docker 
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+        update_cache: yes
+    # start docker server
+    - name: Ensure Docker is started and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    # pull docker image of nginx and attach the storage 
+    - name: Pull Docker nginx image
+      docker_image:
+        name: nginx
+        source: pull
+
+    - name: Create ephemeral storage directory
+      file:
+        path: /tmp/nginx_ephemeral
+        state: directory
+        mode: '0755'
+
+    - name: Run Docker container with ephemeral storage
+      docker_container:
+        name: nginx_container
+        image: nginx
+        state: started
+        restart_policy: always
+        published_ports:
+          - "8080:80"
+        volumes:
+          - /tmp/nginx_ephemeral:/usr/share/nginx/html
+
